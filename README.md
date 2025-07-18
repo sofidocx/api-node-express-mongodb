@@ -1,7 +1,5 @@
 # API REST com Node.js, Express e MongoDB
 
-# 🚀 API REST com Node.js, Express e MongoDB
-
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
@@ -11,7 +9,7 @@
 
 Este projeto é desenvolvido durante o curso da Alura com o objetivo de criar uma API RESTful do zero, utilizando Node.js, Express e MongoDB.
 
-## 📚 Objetivos do Projeto
+## Objetivos do Projeto
 
 - Criar uma API RESTful do zero
 - Entender como funcionam as requisições HTTP
@@ -19,14 +17,14 @@ Este projeto é desenvolvido durante o curso da Alura com o objetivo de criar um
 - Conectar a API com um banco de dados MongoDB
 - Implementar buscas por campos específicos
 
-## 🚀 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - [Node.js](https://nodejs.org/)
 - [Express](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
 - [Mongoose](https://mongoosejs.com/) (ODM para MongoDB)
 
-## 🛠 Como rodar o projeto localmente
+## Como rodar o projeto localmente
 
 1. Clone o repositório:
 ```bash
