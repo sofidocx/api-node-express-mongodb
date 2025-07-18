@@ -6,6 +6,7 @@ node_modules
 logs
 *.log
 
+
 # Sistema
 .DS_Store
 Thumbs.db

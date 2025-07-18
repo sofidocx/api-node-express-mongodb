@@ -1,31 +1,28 @@
 import express from 'express'; 
+import conectaNaDatabase from './config/dbConnect.js';
+import livro from "./models/Livro.js";
+
+const conexao = await conectaNaDatabase();
+conexao.on("error", (erro) => {
+    console.error("Erro de conexão", erro);
+});
+
+conexao.once("open", () => {
+    console.log("Conexão com o banco feita com sucesso");
+})
+
 
 const app = express(); //importando e executando o framework]
 app.use(express.json()); //middleware --> executar em todas as requisições (body com json -> convertido para json)
 
-const livros = [
-    {
-        id: 1, 
-        titulo: "Hipotese do amor"
-    },
-    {
-        id: 2, 
-        titulo: "Xeque Mate"
-    }
-]
-
-function buscaLivro (id) {
-    return livros.findIndex(livro => {
-        return livro.id === Number(id);
-    })
-}
 
 app.get("/", (req, res) => {
     res.status(200).send("Curso de Node.js"); 
 }); //gerenciando as rotas 
 
-app.get ("/livros", (req,res) => {
-    res.status(200).json(livros); 
+app.get("/livros", async (req, res) => {
+  const listaLivros = await livro.find();
+  res.status(200).json(listaLivros);
 });
 
 app.post("/livros", (req, res) => {
