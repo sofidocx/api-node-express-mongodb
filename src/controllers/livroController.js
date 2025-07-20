@@ -1,6 +1,7 @@
 //concentrar todas as ações que podem ser feitas em um livro 
 
-import livro from "../models/Livro.js"
+import livro from "../models/Livro.js";
+import { autor } from "../models/Autor.js";
 
 class LivroController {
 
@@ -27,11 +28,14 @@ class LivroController {
 
 // função para cadastrar um livro no banco de dados 
     static async cadastrarLivro (req, res) {
+        const novoLivro = req.body; //passar por meio do body para o mongoose 
         try {
-            const novoLivro = await livro.create(req.body); //passar por meio do body para o mongoose 
+            const autorEncontrado = await autor.findById(novoLivro.autor);
+            const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc }};
+            const livroCriado = await livro.create(livroCompleto);
             res.status(201).json({
                 message : "Criado com sucesso", 
-                livro: novoLivro
+                livro: livroCriado
             });
         } catch (erro) {
             res.status(500).json({message: `${erro.message} - Falha ao cadastrar o livro`})//erros internos do servidor 
