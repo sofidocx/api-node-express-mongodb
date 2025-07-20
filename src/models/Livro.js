@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 //criando um schema e um modelo para livro
+//embeding/referecing
 
 const livroSchema = new mongoose.Schema({
     id : { type: mongoose.Schema.Types.ObjectId },
