@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { autor } from "../models/Autor.js"
 
 class AutorController {
@@ -7,22 +8,26 @@ class AutorController {
             const listarAutores = await autor.find();
             res.status(200).json(listarAutores);
         } catch (erro) {
-            res.status(500).json({ messagae: `${erro.message} - Falha na requisição dos autores ` })
+            res.status(500).json({ messagae: `${erro.message} - Falha na requisição dos autores ` });
         }
     }
 
-    static async listarAutorPorId(req, res) {
+    static async listarAutorPorId(req, res, next) {
         try {
             const id = req.params.id;
             const autorResultado = await autor.findById(id);
-            res.status(200).send(autorResultado);
+            if (autorResultado !== null) {
+                res.status(200).send(autorResultado);
+            } else {
+                res.status(404).json({ message: "Falha na requisição de buscar o autor " }); //recurso não localizado
+            }
 
         } catch (erro) {
-            res.status(400).json({ message: `${erro.message} - Falha na requisição de buscar o autor ` })
+            next(erro);
         }
     }
 
-    static async cadastrarAutor(req, res) {
+    static async cadastrarAutor(req, res, next) {
         try {
             let autor = new autores(req.body);
 
@@ -30,10 +35,10 @@ class AutorController {
 
             res.status(201).send(autorResultado.toJSON());
         } catch (erro) {
-            res.status(500).json({ message: `${erro.message} - Falha na requisição em cadastrar o autor` })
+           next(erro);
         }
     }
-    static atualizarAutor = async (req, res) => {
+    static atualizarAutor = async (req, res, next) => {
         try {
             const id = req.params.id;
 
@@ -41,17 +46,17 @@ class AutorController {
 
             res.status(200).send({ message: "Autor atualizado com sucesso" });
         } catch (erro) {
-            res.status(500).send({ message: erro.message });
+            next(erro);
         }
     };
 
-    static async deletarAutor(req, res) {
+    static async deletarAutor(req, res, next) {
         try {
             const id = req.params.id;
             await autor.findByIdAndDelete(id);
             res.status(200).json("Autor deletado com sucesso");
         } catch (erro) {
-            res.status(500).json({ message: `${erro.message} - Falha na requisição em deletar o autor` })
+            next(erro); 
         }
     }
 };
