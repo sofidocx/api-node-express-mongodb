@@ -2,6 +2,7 @@
 
 import livro from "../models/Livro.js";
 import { autor } from "../models/Autor.js";
+import NaoEncontrado from "../erros/naoEncontrado.js";
 
 class LivroController {
 
@@ -27,7 +28,13 @@ class LivroController {
                 .populate("autor", "nome")
                 .exec();
 
-            res.status(200).json(livroEncontrado);
+                if(livroEncontrado !== null) {
+
+                    res.status(200).json(livroEncontrado);
+                } else {
+                    next(new NaoEncontrado("Id do livro não encontrado!"));
+                }
+
         } catch (erro) {
            next(erro);
         }
@@ -36,11 +43,17 @@ class LivroController {
     // função para cadastrar um livro no banco de dados 
     static cadastrarLivro = async (req, res, next) => {
         try {
-            let livro = new livros(req.body);
+            let livro = new livro(req.body);
 
             const livroResultado = await livro.save();
 
-            res.status(201).send(livroResultado.toJSON());
+            if(livroResultado !== null) {
+                res.status(201).send(livroResultado.toJSON());
+
+            } else {
+                next (new NaoEncontrado ("Id do livro não encontrado"));
+            }
+
         } catch (erro) {
             next(erro);
         }
@@ -50,8 +63,14 @@ class LivroController {
         try {
             const id = req.params.id;
 
-            await livro.findByIdAndUpdate(id, {$set: req.body}); //precisamos do identificador único e precisamos da informação que precisamos atualizar 
-            res.status(200).json({ message: "Livro Atualizado" });
+            const livroResultado = await livro.findByIdAndUpdate(id, {$set: req.body}); //precisamos do identificador único e precisamos da informação que precisamos atualizar
+            
+            if (livroResultado !== null) {
+                res.status(200).json({ message: "Livro Atualizado" });
+            } else {
+                next (new NaoEncontrado ("Id do livro não encontrado"));
+            }
+            
         } catch (erro) {
             next(erro);
         }
@@ -63,16 +82,21 @@ class LivroController {
         try {
             const id = req.params.id;
 
-            await livro.findByIdAndDelete(id);
-            res.status(200).json({ message: "Livro deletado com sucesso" })
+            const livroResultado = await livro.findByIdAndDelete(id);
+
+            if (livroResultado !== null ) {
+                res.status(200).json({ message: "Livro deletado com sucesso" })
+            }else{
+                next(new NaoEncontrado("Id do livro não encontrado"))
+            }
         } catch (erro) {
             next(erro);
         }
     };
 
     static async listarLivrosPorEditora(req, res, next) {
-        const editora = req.query.editora;
         try {
+            const editora = req.query.editora;
             const livrosPorEditora = await livro.find({ "editora": editora }) // propriedade : variavel que esta guardando a informação  que chega via rota 
             res.status(200).json(livrosPorEditora)
         } catch (erro) {

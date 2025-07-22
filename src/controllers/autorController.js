@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { autor } from "../models/Autor.js"
+import NaoEncontrado from "../erros/naoEncontrado.js";
 
 class AutorController {
 
@@ -10,7 +11,7 @@ class AutorController {
         } catch (erro) {
             res.status(500).json({ messagae: `${erro.message} - Falha na requisição dos autores ` });
         }
-    }
+    };
 
     static async listarAutorPorId(req, res, next) {
         try {
@@ -19,13 +20,13 @@ class AutorController {
             if (autorResultado !== null) {
                 res.status(200).send(autorResultado);
             } else {
-                res.status(404).json({ message: "Falha na requisição de buscar o autor " }); //recurso não localizado
+                next(new NaoEncontrado("Falha na requisição de buscar o autor"));
             }
 
         } catch (erro) {
             next(erro);
         }
-    }
+    };
 
     static async cadastrarAutor(req, res, next) {
         try {
@@ -37,28 +38,41 @@ class AutorController {
         } catch (erro) {
            next(erro);
         }
-    }
+    };
+
     static atualizarAutor = async (req, res, next) => {
         try {
             const id = req.params.id;
 
-            await autores.findByIdAndUpdate(id, { $set: req.body });
+            const autorResultado = await autor.findByIdAndUpdate(id, { $set: req.body });
 
-            res.status(200).send({ message: "Autor atualizado com sucesso" });
+            if(autorResultado !== null) {
+                res.status(200).send({ message: "Autor atualizado com sucesso" });
+            } else {
+
+                next(new NaoEncontrado("Falha na requisição de buscar o autor"));
+            }
+
         } catch (erro) {
-            next(erro);
+            next(erro); 
         }
     };
 
     static async deletarAutor(req, res, next) {
         try {
             const id = req.params.id;
-            await autor.findByIdAndDelete(id);
-            res.status(200).json("Autor deletado com sucesso");
+            const autorResultado = await autor.findByIdAndDelete(id);
+
+            if(autorResultado !== null) {
+                res.status(200).json("Autor deletado com sucesso");
+            } else {
+                next(new NaoEncontrado("Falha na requisição de buscar o autor"));
+            }
+
         } catch (erro) {
-            next(erro); 
+            next(erro);
         }
-    }
+    };
 };
 
 export default AutorController;

@@ -1,12 +1,22 @@
 
 import mongoose from "mongoose";
+import erroBase from "../erros/erroBase.js";
+import erroValidacao from "../erros/erroValidacao.js"
+import requisicaoIncorreta from "../erros/requisicaoIncorreta.js";
+import NaoEncontrado from "../erros/naoEncontrado.js";
 
 //manipulando erros da aplicação 
-function manipuladorDeErros(erro, req, res, next) { 
+function manipuladorDeErros(erro, req, res, next) {
     if (erro instanceof mongoose.Error.CastError) {
-        res.status(400).send({message: "Um ou mais dados fornecidos estão incorretos"})
-    } else {
-        res.status(500).send({message: "Erro interno do servidor"});
+        new requisicaoIncorreta().enviarResposta(res);
+    } else if (erro instanceof mongoose.Error.ValidationError) {
+        new erroValidacao(erro).enviarResposta(res);
+    }
+    else if (erro instanceof NaoEncontrado) {
+        erro.enviarResposta(res);
+    }
+    else {
+        new erroBase().enviarResposta(res);
     }
 }
 
