@@ -1,78 +1,78 @@
-import mongoose from "mongoose";
-import { autor } from "../models/Autor.js"
-import NaoEncontrado from "../erros/naoEncontrado.js";
+import NaoEncontrado from "../erros/NaoEncontrado.js";
+import autores from "../models/Autor.js";
 
 class AutorController {
+  static listarAutores = async (req, res) => {
+    try {
+      const autoresResultado = await autores.find();
 
-    static async listarAutores(req, res) {
-        try {
-            const listarAutores = await autor.find();
-            res.status(200).json(listarAutores);
-        } catch (erro) {
-            res.status(500).json({ messagae: `${erro.message} - Falha na requisição dos autores ` });
-        }
-    };
+      res.status(200).json(autoresResultado);
+    } catch (erro) {
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  };
 
-    static async listarAutorPorId(req, res, next) {
-        try {
-            const id = req.params.id;
-            const autorResultado = await autor.findById(id);
-            if (autorResultado !== null) {
-                res.status(200).send(autorResultado);
-            } else {
-                next(new NaoEncontrado("Falha na requisição de buscar o autor"));
-            }
+  static listarAutorPorId = async (req, res, next) => {
+    try {
+      const id = req.params.id;
 
-        } catch (erro) {
-            next(erro);
-        }
-    };
+      const autorResultado = await autores.findById(id);
 
-    static async cadastrarAutor(req, res, next) {
-        try {
-            let autor = new autores(req.body);
+      if (autorResultado !== null) {
+        res.status(200).send(autorResultado);
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      }
+    } catch (erro) {
+      next(erro);
+    }
+  };
 
-            const autorResultado = await autor.save();
+  static cadastrarAutor = async (req, res, next) => {
+    try {
+      let autor = new autores(req.body);
 
-            res.status(201).send(autorResultado.toJSON());
-        } catch (erro) {
-            next(erro);
-        }
-    };
+      const autorResultado = await autor.save();
 
-    static atualizarAutor = async (req, res, next) => {
-        try {
-            const id = req.params.id;
+      res.status(201).send(autorResultado.toJSON());
+    } catch (erro) {
+      next(erro);
+    }
+  };
 
-            const autorResultado = await autor.findByIdAndUpdate(id, { $set: req.body });
+  static atualizarAutor = async (req, res, next) => {
+    try {
+      const id = req.params.id;
+  
+      const autorResultado = await autores.findByIdAndUpdate(id, {$set: req.body});
 
-            if (autorResultado !== null) {
-                res.status(200).send({ message: "Autor atualizado com sucesso" });
-            } else {
+      if (autorResultado !== null) {
+        res.status(200).send({message: "Autor atualizado com sucesso"});
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      }
 
-                next(new NaoEncontrado("Falha na requisição de buscar o autor"));
-            }
+    } catch (erro) {
+      next(erro);
+    }
+  };
 
-        } catch (erro) {
-            next(erro);
-        }
-    };
+  static excluirAutor = async (req, res, next) => {
+    try {
+      const id = req.params.id;
 
-    static async deletarAutor(req, res, next) {
-        try {
-            const id = req.params.id;
-            const autorResultado = await autor.findByIdAndDelete(id);
+      const autorResultado = await autores.findByIdAndDelete(id);
 
-            if (autorResultado !== null) {
-                res.status(200).json("Autor deletado com sucesso");
-            } else {
-                next(new NaoEncontrado("Falha na requisição de buscar o autor"));
-            }
 
-        } catch (erro) {
-            next(erro);
-        }
-    };
-};
+      if (autorResultado !== null) {
+        res.status(200).send({message: "Autor removido com sucesso"});
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      }
+    } catch (erro) {
+      next(erro);
+    }
+  };
+}
 
 export default AutorController;
