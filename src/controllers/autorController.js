@@ -36,7 +36,7 @@ class AutorController {
 
             res.status(201).send(autorResultado.toJSON());
         } catch (erro) {
-           next(erro);
+            next(erro);
         }
     };
 
@@ -46,7 +46,7 @@ class AutorController {
 
             const autorResultado = await autor.findByIdAndUpdate(id, { $set: req.body });
 
-            if(autorResultado !== null) {
+            if (autorResultado !== null) {
                 res.status(200).send({ message: "Autor atualizado com sucesso" });
             } else {
 
@@ -54,7 +54,7 @@ class AutorController {
             }
 
         } catch (erro) {
-            next(erro); 
+            next(erro);
         }
     };
 
@@ -63,7 +63,7 @@ class AutorController {
             const id = req.params.id;
             const autorResultado = await autor.findByIdAndDelete(id);
 
-            if(autorResultado !== null) {
+            if (autorResultado !== null) {
                 res.status(200).json("Autor deletado com sucesso");
             } else {
                 next(new NaoEncontrado("Falha na requisição de buscar o autor"));
