@@ -1,38 +1,15 @@
 import NaoEncontrado from "../erros/NaoEncontrado.js";
 import { autores, livros } from "../models/index.js";
-import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
 
 class LivroController {
 
   static listarLivros = async (req, res, next) => {
     try {
 
-      //let { limite = 5, pagina = 1, campoOrdenacao = "_id", ordem = -1 } = req.query;
-      //opção de mercado 
+      const buscaLivros = livros.find(); 
+      req.resultado = buscaLivros;
 
-      let { limite = 5, pagina = 1, ordenacao = "_id:-1" } = req.query;
-
-      let [campoOrdenacao, ordem] = ordenacao.split(":"); //desestruturação de ordenação, array de duas posições
-
-      limite = parseInt(limite);
-      pagina = parseInt(pagina);
-      ordem = parseInt(ordem); 
-
-      if (limite > 0 && pagina > 0) {
-
-        const livrosResultado = await livros.find()
-        //.sort({ titulo: 1}) // - para ordenar em ordem alfabética 
-        //.sort({ _id: -1 }) //1 ou -1 para ordenar, de forma crescente (1) ou descrescente (-1)
-          .sort ({[campoOrdenacao]: ordem})
-          .skip((pagina - 1) * limite)
-          .limit(limite)
-          .populate("autor")
-          .exec();
-
-        res.status(200).json(livrosResultado);
-      } else {
-        next(new RequisicaoIncorreta);
-      }
+      next(); 
 
     } catch (erro) {
       next(erro);
@@ -114,11 +91,13 @@ class LivroController {
       const busca = await processaBusca(req.query);
 
       if (busca !== null) {
-        const livrosResultado = await livros
+        const livrosResultado = livros
           .find(busca)
           .populate("autor");
 
-        res.status(200).send(livrosResultado);
+        req.resultado = livrosResultado; 
+
+        next(); 
 
       } else {
         res.status(200).send([]);
